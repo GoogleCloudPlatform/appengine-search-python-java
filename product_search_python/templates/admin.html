@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>Administrative Actions</title>
+{% endblock %}
+
+
+{% block content %}
+
+    <h2>Administrative Actions</h2>
+
+    {% if notification %}
+      <p><b>Notification</b>: {{notification}}</p>
+    {% endif %}
+    <p></p>
+
+    <ul>
+     <li><a href="/admin/manage?action=reinit"><b>Delete all datastore and index product data</b>, then <b>load in sample product data</b></a> (from 'data/{{sampleb}}' and 'data/{{samplet}}').<br/>&nbsp;</li>
+
+     <li><a href="/admin/manage?action=demo_update">Demo loading product <b>update</b> data</a>
+        (from 'data/{{update_sample}}'.  Click this <em>after</em> you have loaded sample data via the link above, to see the effect of the update).</li>
+
+    <li><a href="/admin/manage?action=update_ratings">Re-index any documents that have an updated average rating.</a></li>
+
+
+     <li><a href="/admin/create_product">Create a new product</a>.
+
+    </ul>
+
+{% endblock %}
+

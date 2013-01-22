@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+"http://www.w3.org/TR/2001/REC-MathML2-20010221/dtd/xhtml-math11-f.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="./css/byword.css"/>
+  <title>README</title>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="content">
+<h1>Full-Text Search Demo App: Product Search</h1>
+
+<h2>Introduction</h2>
+
+<p>This Python App Engine application illustrates the use of the <a href="https://developers.google.com/appengine/docs/python/search">Full-Text Search
+API</a> in a &#8220;Product
+Search&#8221; domain with two categories of sample products: <em>books</em> and
+<em>hd televisions</em>. This README assumes that you are already familiar with how to
+configure and deploy an App Engine app. If not, first see the App Engine
+<a href="https://developers.google.com/appengine/docs/python/overview">documentation</a>
+and <a href="https://developers.google.com/appengine/docs/python/gettingstarted">Getting Started guide</a>.</p>
+
+<p>This demo app allows users to search product information using full-text search,
+and to add reviews with ratings to the products. Search results can be sorted
+according to several criteria. In conjunction with listed search results, a
+sidebar allows the user to further filter the search results on product rating.
+(A product&#8217;s rating is the average of its reviews, so if a product has no
+reviews yet, its rating will be 0).</p>
+
+<p>A user does not need to be logged in to search the products, or to add reviews.
+A user must be logged in <strong>as an admin of the app to add or modify product
+data</strong>. The sidebar admin links are not displayed for non-admin users.</p>
+
+<h2>Configuration</h2>
+
+<p>Before you deploy the application, edit <code>app.yaml</code> to specify your own app id and version.</p>
+
+<p>In <code>templates/product.html</code>, the Google Maps API is accessed. It does not require an API key, but you are encouraged to use one to monitor your maps usage. In the <head> element, look for:</p>
+
+<pre><code>src=&quot;https://maps.googleapis.com/maps/api/js?sensor=false&quot;
+</code></pre>
+
+<p>and replace it with something like the following, where <code>replaceWithYourAPIKey</code> is your own API key:</p>
+
+<pre><code>  src=&quot;https://maps.googleapis.com/maps/api/js?sensor=false&amp;amp;key=replaceWithYourAPIKey&quot;
+</code></pre>
+
+<p>as described <a href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key">here</a>.</p>
+
+<h2>Information About Running the App Locally</h2>
+
+<p>Log in as an app admin to add and modify the app&#8217;s product data.</p>
+
+<p>The app uses XG (cross-group) transactions, which requires the dev_appserver to
+be run with the <code>--high_replication</code> flag. E.g., to start up the dev_appserver
+from the command line in the project directory (this directory), assuming the
+GAE SDK is in your path, do:</p>
+
+<pre><code>dev_appserver.py --high_replication .
+</code></pre>
+
+<p>The app is configured to use Python 2.7. On some platforms, it may also be
+necessary to have Python 2.7 installed locally when running the dev_appserver.
+The app&#8217;s unit tests also require Python 2.7.</p>
+
+<p>When running the app locally, not all features of the search API are supported.
+So, not all search queries may give the same results during local testing as
+when run with the deployed app.
+Be sure to test on a deployed version of your app as well as locally.</p>
+
+<h2>Administering the deployed app</h2>
+
+<p>You will need to be logged in as an administrator of the app to add and modify
+product data, though not to search products or add reviews. If you want to
+remove this restriction, you can edit the <code>login: admin</code> specification in
+<code>app.yaml</code>, and remove the <code>@BaseHandler.admin</code> decorators in
+<code>admin_handlers.py</code>.</p>
+
+<h2>Loading Sample Data</h2>
+
+<p>When you first start up your app, you will want to add sample data to it.
+</p>
+
+<p>Sample product data can be added in two ways. First, sample product data in CSV
+format can be added in batch via a link on the app&#8217;s admin page. Batch indexing
+of documents is more efficient than adding the documents one at a time. For consistency,
+<strong>the batch addition of sample data first removes all
+existing index and datastore product data</strong>.</p>
+
+<p>The second way to add sample data is via the admin&#8217;s &#8220;Create new product&#8221; link
+in the sidebar, which lets an admin add sample products (either &#8220;books&#8221; or
+&#8220;hd televisions&#8221;) one at a time.</p>
+
+<h2>Updating product documents with a new average rating</h2>
+
+<p>When a user creates a new review, the average rating for that product is
+updated in the datastore. The app may be configured to update the associated
+product <code>search.Document</code> at the same time (the default), or do this at a
+later time in batch (which is more efficient). See <code>cron.yaml</code> for an example
+of how to do this update periodically in batch.</p>
+
+<h2>Searches</h2>
+
+<p>Any valid queries can be typed into the search box. This includes simple word
+and phrase queries, but you may also submit queries that include references to
+specific document fields and use numeric comparators on numeric fields. See the
+Search API&#8217;s
+<a href="https://developers.google.com/appengine/docs/python/search">documentation</a> for
+a description of the query syntax. </p>
+
+<p>Thus, for explanatory purposes, the &#8220;product details&#8221; show all actual
+field names of the given product document; you can use this information to
+construct queries against those fields. In the same spirit, the raw
+query string used for the query is displayed with the search results.</p>
+
+<p>Only product information is searched; product review text is not included in the
+search.</p>
+
+<h3>Some example searches</h3>
+
+<p>Below are some example product queries, which assume the sample data has been loaded.
+As discussed above, not all of these queries are supported by the dev_appserver.</p>
+
+<p><code>stories price &lt; 10</code><br/>
+<code>price &gt; 10 price &lt; 15</code><br/>
+<code>publisher:Vintage</code><br/>
+<code>Mega TVs</code><br/>
+<code>name:tv1</code><br/>
+<code>size &gt; 30</code></p>
+
+<h2>Geosearch</h2>
+
+<p>This application includes an example of using the Search API to perform
+location-based queries. Sample store location data is defined in <code>stores.py</code>,
+and is loaded along with the product data. The product details page for a
+product allows a search for stores within a given radius of the user&#8217;s current
+location. The user&#8217;s location is obtained from the browser.</p>
+    </div>
+  </div> <!-- End wrapper -->
+</body>
+</html>

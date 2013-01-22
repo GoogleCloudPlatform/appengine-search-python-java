@@ -1,0 +1,4 @@
+cron:
+- description: reindex any documents that need ratings update due to new reviews
+  url: '/admin/update_ratings_info'
+  schedule: every 15 minutes

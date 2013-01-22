@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>Add a new product</title>
+{% endblock %}
+
+
+
+
+{% block content %}
+
+    <h3>Add a New Product to the Catalog</h3>
+
+    <p>Enter a unique product ID. It should not contain whitespace. (An id has been auto-generated for you, in case you want to use it).</p>
+
+    {% if error_message %}
+      <p><b>Error</b>: {{error_message}}</p>
+    {% endif %}
+
+    <div class="row">
+
+    <div class="span7">
+
+    <h4>Books</h4>
+
+    <form action="/admin/create_product" method="post">
+       <input type="hidden" name="category" value="books" />
+
+      <div class="clearfix">
+        <label for="pid">product ID:</label>
+        <div class="input">
+         <input type="text" name="pid" value="{{pid}}" />
+        </div>
+       </div>
+
+      <div class="clearfix">
+        <label for="name">product name:</label>
+        <div class="input">
+         <input type="text" name="name" value="{{name}}" />
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="description">product<br/>description:</label>
+        <div class="input">
+         <textarea name="description" rows="3" cols="80">{{description}}</textarea>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="price">price:</label>
+        <div class="input">
+         <input type="text" id="price" name="price" value="{{price}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="isbn">isbn:</label>
+        <div class="input">
+         <input type="text" id="isbn" name="isbn" value="{{isbn}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="pages">pages:</label>
+        <div class="input">
+         <input type="text" id="pages" name="pages" value="{{pages}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="publisher">publisher:</label>
+        <div class="input">
+         <input type="text" id="publisher" name="publisher" value="{{publisher}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="author">author:</label>
+        <div class="input">
+         <input type="text" id="author" name="author" value="{{author}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="title">title:</label>
+        <div class="input">
+         <input type="text" id="title" name="title" value="{{title}}"/>
+        </div>
+       </div>
+
+      <div class="actions">
+       <input class="btn primary" id="subreview" name="subreview" type="submit" value="Create"/>
+       <input type="reset" class="btn primary"  name="reviewreset" value="Clear"/>
+      </div>
+    </form>
+
+    </div>
+    <div class="span7">
+
+    <h4>Televisions</h4>
+
+      <form action="/admin/create_product" method="post">
+       <input type="hidden" name="category" value="hd televisions" />
+
+
+      <div class="clearfix">
+        <label for="pid">product ID:</label>
+        <div class="input">
+         <input type="text" name="pid" value="{{pid}}" />
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="name">product name:</label>
+        <div class="input">
+         <input type="text" name="name" value="{{name}}" />
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="description">product<br/>description:</label>
+        <div class="input">
+         <textarea name="description" rows="3" cols="80">{{description}}</textarea>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="price">price:</label>
+        <div class="input">
+         <input type="text" id="price" name="price" value="{{price}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="brand">brand:</label>
+        <div class="input">
+         <input type="text" id="brand" name="brand" value="{{brand}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="price">TV type:</label>
+        <div class="input">
+         <input type="text" id="tv_type" name="tv_type" value="{{tv_type}}"/>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="price">size:</label>
+        <div class="input">
+         <input type="text" id="size" name="size" value="{{size}}"/>
+        </div>
+       </div>
+
+      <div class="actions">
+       <input class="btn primary" id="subreview" name="subreview" type="submit" value="Create"/>
+       <input type="reset" class="btn primary"  name="reviewreset" value="Clear"/>
+      </div>
+    </form>
+
+    </div>
+    </div> <!-- end row -->
+
+
+{% endblock %}
+

@@ -1,0 +1,16 @@
+application: search-py-demo
+version: 1
+runtime: python27
+threadsafe: true
+api_version: 1
+
+handlers:
+- url: /static
+  static_dir: static
+
+- url: .*
+  script: search_demo.application
+
+libraries:
+- name: jinja2
+  version: "2.6"

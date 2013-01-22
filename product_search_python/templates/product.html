@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>Product Information for {{pname}}</title>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">google.load("jquery", "1"); google.load("jqueryui", "1");</script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?sensor=false"
+      type="text/javascript"></script>
+    <script type="text/javascript" src="/static/js/StyledMarker.js"></script>
+
+
+{% endblock %}
+
+
+  {% block content %}
+
+  <script type="text/javascript">
+
+// Geolocation with HTML 5 and Google Maps API based on example from
+// maxheapsize: http://maxheapsize.com/2009/04/11/getting-the-browsers-geolocation-with-html-5/
+// This script is based in part on one from http://merged.ca/
+
+var map;
+var mapCenter;
+
+var hostname_ = "{{app_url}}"
+
+
+function getStoreLocations(squery, lat, lon, dist) {
+
+  ajax_data = {
+    location_query: squery,
+    latitude: lat,
+    longitude: lon,
+    distance: dist
+  };
+
+  $.ajax({
+    url: hostname_ + "get_store_locations",
+    success: function (data) {
+      // alert('location search results: ' + data[0].addr + ': ' + data[0].lat + ', ' + data[0].lon);
+      mapServiceProvider(lat, lon, dist, data);
+    },
+    data: ajax_data,
+    dataType: "jsonp"
+  });
+}
+
+function mapLocations(latitude, longitude) {
+    // Did we get the position correctly?
+    // alert (position.coords.latitude+', '+position.coords.longitude);
+    // show the map
+    $('#map').css({ 'display': 'block'});
+    var d = parseFloat($("#distance").val());
+    var distance;
+    if ($("#units").val() == "miles") {
+      distance = d * 1.609344 * 1000;
+    } else {
+      distance = d * 1000;
+    }      
+    var squery = 'distance(store_location, geopoint(' + latitude + ', ' + longitude + ')) < ' + distance
+    // submit search query
+    getStoreLocations(squery, latitude, longitude, distance);
+}
+
+function findLocation() { 
+  
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition( function (position) {
+
+      mapLocations(position.coords.latitude, position.coords.longitude);
+      
+    }, // next function is the error callback
+      function (error)
+      {
+        switch(error.code) 
+        {
+          case error.TIMEOUT:
+            alert ('Timeout');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert ('Position unavailable; using fake data (37.60, -122).  If you are running from localhost, note that geosearch is not currently fully supported on the dev app server.');
+            mapLocations(37.60, -122);
+            break;
+          case error.PERMISSION_DENIED:
+            alert ('Permission denied; using fake data.(-33.873038, 151.20563).  If you are running from localhost, note that geosearch is not currently fully supported on the dev app server.');
+            mapLocations(-33.873038, 151.20563);
+            break;
+          case error.UNKNOWN_ERROR:
+            alert ('Unknown error');
+            break;
+        }
+      }
+    );
+  } 
+  else  {
+    alert("Geolocation services are not supported by your browser or you do not have a GPS device in your computer. Using fake data.");
+    mapLocations(-33, 151);
+
+  }  
+}
+
+function createMarker(map, point, title, text) {
+
+  var marker = new google.maps.Marker({
+    position: point,
+    map: map,
+    title: title,
+    });
+  var infowindow = new google.maps.InfoWindow({
+    content: text
+  });
+  google.maps.event.addListener(marker, "click", function() {
+    infowindow.open(map, marker);
+  });
+  return marker;
+}
+
+
+function mapServiceProvider(latitude,longitude, distance, data) {
+  var userloc = new google.maps.LatLng(latitude,longitude);
+  var mapOptions = {
+    zoom: 4,
+    center: userloc,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+  }
+  var map = new google.maps.Map(document.getElementById("map"),
+    mapOptions);
+  var latlngbounds = new google.maps.LatLngBounds();
+  latlngbounds.extend(userloc);
+  for (var i = 0; i < data.length; i++) {
+    var p = new google.maps.LatLng(data[i].lat, data[i].lon);
+    latlngbounds.extend(p);
+    var storename = data[i].storename;
+    var addr = data[i].addr;
+    var store_info = storename + ', ' + addr;
+    var marker = createMarker(map, p, storename, store_info);
+    marker.setMap(map);
+  }
+  // build blue-colored point for the user's location.
+  var styleIconClass = new StyledIcon(StyledIconTypes.CLASS,{color:"#016DCF"});
+  var youarehere = new StyledMarker({styleIcon:new StyledIcon(StyledIconTypes.MARKER,{},styleIconClass),position:userloc, map:map, title: 'you'});
+    map.fitBounds(latlngbounds);
+}
+
+
+</script>
+
+      <h2>Product Information for {{pname}}</h2>
+
+      <!-- For expository purposes, all document fields are listed below with their actual names; -->
+        <!-- a real customer-facing app would expose this information differently. -->
+
+    <div id="mapbox" style="padding: 20px;border: 1px dotted #666;"> 
+
+       <div id="map" style="display: none; margin: 0 0 20px 20px;width: 650px; height: 300px;border: 1px solid #6666dd;">
+       </div>
+
+       <div>
+          <div class="clearfix">
+          <label for="rating">distance: </label>
+            <div class="input">
+             <input type="text" id="distance" name="distance" /> &nbsp; units:
+             <select id="units" name="units">
+              <option value="km">km</option>
+              <option value="miles">miles</option>
+             </select>
+            </div>
+          </div>
+          <div class="actions">
+          <input class="btn primary" id="locate" name="locate" type="submit" 
+          value="Find stores near me" onclick="findLocation();"/>
+        </div>
+        <div id="loc_results">
+        </div>
+       </div>
+    </div>
+
+
+      <p><br/>
+      {% for field in prod_doc.fields %}
+          <b>{{field.name}}</b>:&nbsp;{{field.value}} <br/>
+      {% endfor %}
+        <br/><a href="{{review_link}}">Reviews for {{pname}}</a>
+      </p>
+
+
+    <h4>Create a Review for {{pname}}</h4>
+
+    <form action="/create_review" method="post">
+       <input type="hidden" name="pid" value="{{pid}}" />
+       <input type="hidden" name="category" value="{{category}}" />
+       <input type="hidden" name="pname" value="{{pname}}" />
+       <div class="clearfix">
+        <label for="comment">review comment:</label>
+        <div class="input">
+         <textarea name="comment" rows="3" cols="80">{{comment}}</textarea>
+        </div>
+       </div>
+
+       <div class="clearfix">
+        <label for="rating">rating (1-5):</label>
+        <div class="input">
+         <input type="text" id="rating" name="rating" value="{{rating}}"/>
+        </div>
+       </div>
+
+      <div class="actions">
+       <input class="btn primary" id="subreview" name="subreview" type="submit" value="Review"/>
+       <input type="reset" class="btn primary"  name="reviewreset" value="Clear"/>
+      </div>
+    </form>
+
+  {% if user_is_admin %}
+  <p>Delete this product and its reviews; no undo (admin).</p>
+  <form action="/admin/delete_product" method="post">
+    <input type="hidden" name="pid" value="{{pid}}" />
+    <div class="actions">
+     <input class="btn primary" id="delete_prod" name="delete_prod" type="submit" value="Delete Product"/>
+    </div>
+  </form>
+  {% endif %}
+
+ {% endblock %}

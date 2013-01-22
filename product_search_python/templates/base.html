@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css"/>
+
+  {% block head %}{% endblock %}
+</head>
+
+<body style="margin:10px;width:95%;">
+
+    <div  style="background:#016DCF;color:#fff;padding:10px">
+      <h1 style="color:#fff"><a style="color:#fff;" href="/">MegaProducts Company</a></h1>
+   </div>
+
+  <div class="container-fluid">
+
+<div class="sidebar">
+
+<p></p>
+<p><a href="{{ url }}">{{ url_linktext }}</a></p>
+
+<p><a href="/">Product Search</a></p>
+
+<p>{% if admin_url %}
+    <p><a href="{{admin_url}}">{{admin_text}}</a></p>
+  {% endif %}
+</p>
+
+<p>{% if admin_create_url %}
+    <p><a href="{{admin_create_url}}">{{admin_create_text}}</a></p>
+  {% endif %}
+</p>
+
+{% block sidebar %}{% endblock %}
+
+</div> <!-- end sidebar -->
+
+ <div class="content">
+
+{% block content %}{% endblock %}
+
+ </div> <!-- end content -->
+
+ </div> <!-- end container-fluid -->
+
+</body>
+</html>

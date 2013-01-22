@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css"/>
+    <title>Search Demonstration App</title>
+  </head>
+  <body style="margin:20px;">
+
+    <form action="/sign" method="post">
+      <div>Search Demo</div>
+      <div><textarea name="search" rows="1" cols="60"></textarea></div>
+      <div><input type="submit" value="Search"/></div>
+      <div><textarea name="content" rows="3" cols="60"></textarea></div>
+      <div><input type="submit" value="Comment"/></div>
+    </form>
+
+    {{number_returned}} of {{results.number_found}} comments found <p>
+    {% for scored_document in results %}
+      {% for f in scored_document.fields %}
+        {{f.value}} &nbsp;
+      {% endfor %}
+      <p>
+    {% endfor %}
+
+    <a href="{{ url }}">{{ url_linktext }}</a>
+
+  </body>
+</html>

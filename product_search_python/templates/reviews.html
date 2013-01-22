@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block head %}
+    <title>Reviews for {{pname}}</title>
+{% endblock %}
+
+{% block content %}
+
+  <p></p>
+  <p>Back to product <a href="{{prod_url}}">{{pname}}</a></p>
+
+
+   <h3>Reviews for {{pname}}</h3>
+
+   {% if rlist %}
+
+    <h4>
+
+     Average rating {{avg_rating}} </h4>
+
+    {% for result in rlist %}
+      <p>
+       Username: {{result.0}} <br/>
+       Rating: {{result.1}} <br/>
+       Comment: {{result.2}} <br/>
+      </p>
+    {% endfor %}
+
+    {% else %}
+    <h4>None yet</h4>
+    {% endif %}
+
+{% endblock %}

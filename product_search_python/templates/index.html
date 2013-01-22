@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block head %}
+  <title>Product Search Demo App</title>
+{% endblock %}
+
+
+{% block sidebar %}
+
+
+{% if ratings_links %}
+  <h3>Filter on Rating</h3>
+
+  <ul>
+  {% for elt in ratings_links %}
+     <li>
+      <a href="{{elt.0}}">{{elt.1}}</a>
+     </li>
+  {% endfor %}
+ </ul>
+ {% endif %}
+
+ {% endblock %}
+
+
+ {% block content %}
+
+   <h2>Product Search Demo</h2>
+
+    <p>&nbsp;</p>
+
+   <p><a target="_blank" href="/static/instrs.html">Click for information</a> about the demo app. Log in to add sample data.</p>
+
+  <p>&nbsp;</p>
+
+
+    <h4>Product Search</h4>
+
+
+    <form name="searchform" action="/psearch" method="post">
+      <input type="hidden" name="qtype" value="product"/>
+
+      <table>
+
+      <tr>
+
+      <td>
+         <select id="category" name="category">
+          <option value="">Any Category</option>
+          {% for cat in cat_info %}
+           {% if cat.0 == pcategory %}
+             <option value="{{cat.0}}" selected="selected">{{cat.1}}</option>
+           {% else %}
+            <option value="{{cat.0}}">{{cat.1}}</option>
+           {% endif %}
+          {% endfor %}
+         </select>
+
+      </td>
+      <td>
+
+       <input type="text" id="query" name="query" size="80" value="{{base_pquery}}" />
+
+      </td>
+
+      <td>
+
+         Sort by: <select id="sort" name="sort">
+          {% for sort in sort_info %}
+           {% if sort.0 == sort_order %}
+             <option value="{{sort.0}}" selected="selected">{{sort.1}}</option>
+           {% else %}
+            <option value="{{sort.0}}">{{sort.1}}</option>
+           {% endif %}
+          {% endfor %}
+         </select>
+
+      </td></tr>
+
+      <tr>
+      <td>
+       <input type="submit" class="btn primary"  name="psearchsub" value="Product Search"/>
+       <input type="reset" class="btn primary"  name="psearchreset" value="Clear"/>
+      </td><td></td><td></td></tr>
+
+      </table>
+
+    </form>
+
+
+
+    {% if search_response %}
+    <div>
+     <h2>Product Search Results</h2>
+
+      <p>
+        {% if prev_link %}
+          <a href="{{prev_link}}">Previous Results</a>
+        {% else %}
+          Previous Results
+        {% endif %}
+         |
+        {% if next_link %}
+          <a href="{{next_link}}">Next Results</a>
+        {% else %}
+          Next Results
+        {% endif %}
+      </p>
+
+      <p>&nbsp;</p>
+      {% if returned_count > 0 %}
+      <p>
+       {{first_res}} - {{last_res}} of {{number_found}} {{qtype}}s shown for query: <i>{{print_query}}</i>.
+      </p>
+      {% endif %}
+
+      {% for result in search_response %}
+        <p>
+        <span style="color: #014C9D;"><i>Product Description</i></span>: {{result.3|safe}}<br/>
+        <span style="color: #014C9D;"><i>Product name</i></span>: {{result.5}}<br/>
+        <span style="color: #014C9D;"><i>Category</i></span>: {{result.6}}<br/>
+        <span style="color: #014C9D;"><i>Price</i></span>: {{result.4}}<br/>
+        <span style="color: #014C9D;"><i>Average Rating</i></span>:
+         {% if result.7 < 1 %}
+            None yet
+         {% else %}
+           {{result.7}}
+         {% endif %}
+        <br/>
+
+          <a href="/product?pid={{result.1}}">View product details</a>
+          &nbsp;<a href="/reviews?pid={{result.1}}&pname={{result.5}}">Reviews</a>
+        </p>
+      {% endfor %}
+
+      <p>
+        {% if prev_link %}
+          <a href="{{prev_link}}">Previous Results</a>
+        {% else %}
+          Previous Results
+        {% endif %}
+         |
+        {% if next_link %}
+          <a href="{{next_link}}">Next Results</a>
+        {% else %}
+          Next Results
+        {% endif %}
+      </p>
+
+    </div>
+    {%else %}
+     {%if print_query %}
+      <p>No results found.</p>
+     {% endif %}
+
+    {% endif %}
+
+<script type="text/javascript" language="JavaScript">
+document.forms['searchform'].elements['query'].focus();
+</script>
+
+   {% endblock %}
+
