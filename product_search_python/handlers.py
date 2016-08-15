@@ -18,8 +18,6 @@
 
 
 import logging
-import time
-import traceback
 import urllib
 import wsgiref
 
@@ -44,7 +42,7 @@ class IndexHandler(BaseHandler):
     template_values = {
         'cat_info': cat_info,
         'sort_info': sort_info,
-        }
+    }
     self.render_template('index.html', template_values)
 
 
@@ -410,8 +408,7 @@ class ProductSearchHandler(BaseHandler):
               ))
     return search_query
 
-  def _generateRatingsInfo(
-      self, params, query, user_query, sort, category):
+  def _generateRatingsInfo(self, params, query, user_query, sort, category):
     """Add a ratings filter to the query as necessary, and build the
     sidebar ratings buckets content."""
 
@@ -471,9 +468,9 @@ class ShowReviewsHandler(BaseHandler):
       # find the product entity corresponding to that pid
       prod = models.Product.get_by_id(pid)
       if prod:
-        avg_rating = prod.avg_rating  # get the product's average rating, over
-            # all its reviews
+        # get the product's average rating, over all its reviews
         # get the list of review entities for the product
+        avg_rating = prod.avg_rating
         reviews = prod.reviews()
         logging.debug('reviews: %s', reviews)
       else:
@@ -491,6 +488,7 @@ class ShowReviewsHandler(BaseHandler):
           'avg_rating': avg_rating}
       # render the template.
       self.render_template('reviews.html', template_values)
+
 
 class StoreLocationHandler(BaseHandler):
   """Show the reviews for a given product.  This information is pulled from the
